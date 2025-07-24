@@ -9,7 +9,7 @@ import { NotFound } from '~/components/NotFound'
 import appCss from '~/styles/app.css?url'
 import { seo } from '~/utils/seo'
 import { getAuthToken } from '~/utils/auth'
-import { userQueryOptions } from '~/utils/users'
+import { userQueryOptions } from '~/utils/queries'
 import { LinkHeader } from '~/components/LinkHeader'
 
 export const Route = createRootRouteWithContext<{
@@ -61,10 +61,10 @@ export const Route = createRootRouteWithContext<{
 	},
 	notFoundComponent: () => <NotFound />,
 	beforeLoad: async ({ context }) => {
-		// const token = await getAuthToken()
+		const token = await getAuthToken()
 		console.log('beforeLoad root context', context)
 		return {
-			token: null,
+			token
 		}
 	},
 	loader: async ({ context }) => {

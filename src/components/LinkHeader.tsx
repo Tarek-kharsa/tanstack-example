@@ -1,6 +1,7 @@
 // LinkHeader.tsx
 import { Link } from '@tanstack/react-router'
 import React from 'react'
+import { useUser } from '~/utils/queries'
 export type LinkItem = {
 	_name?: string
 	_url?: string
@@ -16,63 +17,95 @@ export type LinkItem = {
 
 export type HeaderItem = { name: string; links: LinkItem[] } | LinkItem
 
-export const LinkHeader = () => (
-	<nav className="flex space-x-4">
-		<div className="p-2 flex gap-2 text-lg">
-			<Link
-				to="/member/login"
-				activeProps={{
-					className: 'font-bold',
-				}}
-			>
-				login
-			</Link>
-			<Link
-				to="/$"
-				search={{ likes: undefined }}
-				activeProps={{
-					className: 'font-bold',
-				}}
-			>
-				create account
-			</Link>
-		</div>
-		{data.map((item, idx) => {
-			// Grouped item
-			if ('links' in item) {
-				return (
-					<div key={idx} className="relative group">
-						<button className="hover:text-blue-600 transition">{item.name}</button>
-						<div className="absolute hidden group-hover:block bg-white shadow mt-2 rounded">
-							{item?.links?.map((link, i) => (
-								<Link
-									key={i}
-									to={link.link}
-									target={link.openInNewTab ? '_blank' : undefined}
-									className="block px-4 py-2 hover:bg-gray-100"
-								>
-									{link.title}
-								</Link>
-							))}
-						</div>
-					</div>
-				)
-			}
+export const LinkHeader = () => {
+	const { data: user } = useUser()
+	return (
+		<nav className="flex items-center gap-10 text-lg px-6 py-3 bg-white shadow-sm rounded-lg">
+			{/* Auth Links */}
+			{!user ? (
+				<div className="flex gap-2 items-center">
+					<Link
+						to="/member/login"
+						activeProps={{ className: 'font-bold text-blue-700 underline underline-offset-4' }}
+						className="px-4 py-2 rounded-md hover:bg-blue-50 hover:text-blue-700 transition font-medium"
+					>
+						Login
+					</Link>
+					<Link
+						to="/member/create_account"
+						activeProps={{ className: 'font-bold text-blue-700 underline underline-offset-4' }}
+						className="px-4 py-2 rounded-md hover:bg-blue-50 hover:text-blue-700 transition font-medium"
+					>
+						Create Account
+					</Link>
+				</div>
+			) : (
+				<>
+					{user.name && <span className="text-blue-700 font-semibold">Welcome, {user.name}!</span>}
+					<Link
+						to="/member/dashboard"
+						activeProps={{ className: 'font-bold text-blue-700 underline underline-offset-4' }}
+						className="px-4 py-2 rounded-md hover:bg-blue-50 hover:text-blue-700 transition font-medium"
+					>
+						dashboard
+					</Link>
+				</>
+			)}
 
-			// Single link item
-			return (
-				<Link
-					key={idx}
-					to={item.link}
-					target={item.openInNewTab ? '_blank' : undefined}
-					className="hover:text-blue-600 transition"
-				>
-					{item.title}
-				</Link>
-			)
-		})}
-	</nav>
-)
+			{/* Navigation Links */}
+			{data.map((item, idx) => {
+				if ('links' in item) {
+					// Grouped dropdown item
+					return (
+						<div key={idx} className="relative group">
+							<button
+								className="flex items-center gap-1 px-4 py-2 rounded-md hover:bg-blue-50 hover:text-blue-700 transition font-medium focus:outline-none"
+								type="button"
+							>
+								{item.name}
+								<svg
+									className="w-4 h-4 ml-1 text-blue-400 group-hover:text-blue-700 transition"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth={2}
+									viewBox="0 0 24 24"
+								>
+									<path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+								</svg>
+							</button>
+
+							{/* Dropdown Menu */}
+							<div className="absolute left-0 top-full hidden group-hover:block bg-white shadow-lg rounded-md z-50 min-w-[14rem] border border-gray-100 animate-fade-in">
+								{item.links.map((link, i) => (
+									<Link
+										key={i}
+										to={link.link}
+										target={link.openInNewTab ? '_blank' : undefined}
+										className="block px-5 py-2 text-base text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition whitespace-nowrap rounded-md"
+									>
+										{link.title}
+									</Link>
+								))}
+							</div>
+						</div>
+					)
+				}
+
+				// Single link
+				return (
+					<Link
+						key={idx}
+						to={item.link}
+						target={item.openInNewTab ? '_blank' : undefined}
+						className="px-4 py-2 rounded-md hover:bg-blue-50 hover:text-blue-700 transition font-medium"
+					>
+						{item.title}
+					</Link>
+				)
+			})}
+		</nav>
+	)
+}
 
 const data: HeaderItem[] = [
 	{
