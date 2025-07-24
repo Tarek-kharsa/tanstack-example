@@ -1,29 +1,22 @@
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { Link, Outlet, createFileRoute } from '@tanstack/react-router'
-import type { User } from '../utils/users'
+import { usersQueryOptions } from '../utils/users'
 
 export const Route = createFileRoute('/users')({
-  loader: async () => {
-    const res = await fetch('/api/users')
-
-    if (!res.ok) {
-      throw new Error('Unexpected status code')
-    }
-
-    const data = (await res.json()) as Array<User>
-
-    return data
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(usersQueryOptions())
   },
   component: UsersComponent,
 })
 
 function UsersComponent() {
-  const users = Route.useLoaderData()
+  const usersQuery = useSuspenseQuery(usersQueryOptions())
 
   return (
     <div className="p-2 flex gap-2">
       <ul className="list-disc pl-4">
         {[
-          ...users,
+          ...usersQuery.data,
           { id: 'i-do-not-exist', name: 'Non-existent User', email: '' },
         ].map((user) => {
           return (
