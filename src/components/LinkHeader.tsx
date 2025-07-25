@@ -1,5 +1,5 @@
 // LinkHeader.tsx
-import { Link } from '@tanstack/react-router'
+import { Link, useLoaderData, useRouteContext } from '@tanstack/react-router'
 import React from 'react'
 import { useUser } from '~/utils/queries'
 export type LinkItem = {
@@ -19,6 +19,8 @@ export type HeaderItem = { name: string; links: LinkItem[] } | LinkItem
 
 export const LinkHeader = () => {
 	const { data: user } = useUser()
+	// const loaderData = useLoaderData({ from: '__root__'})
+	// const user = loaderData?.user || null
 	return (
 		<nav className="flex items-center gap-10 text-lg px-6 py-3 bg-white shadow-sm rounded-lg">
 			{/* Auth Links */}
@@ -53,7 +55,7 @@ export const LinkHeader = () => {
 			)}
 
 			{/* Navigation Links */}
-			{data.map((item, idx) => {
+			{data?.map((item, idx) => {
 				if ('links' in item) {
 					// Grouped dropdown item
 					return (
@@ -242,16 +244,6 @@ const data: HeaderItem[] = [
 		openInNewTab: false,
 		title: 'Our Brands',
 		link: '/our-brands',
-		internalLink: null,
-		hideFromLoggedIn: false,
-		hideFromNeverLoggedIn: false,
-		hideFromEverLoggedIn: false,
-		hideFromNonLoggedIn: false,
-	},
-	{
-		openInNewTab: false,
-		title: 'Destinations map',
-		link: 'https://www.ghadiscovery.com/destinations-map',
 		internalLink: null,
 		hideFromLoggedIn: false,
 		hideFromNeverLoggedIn: false,

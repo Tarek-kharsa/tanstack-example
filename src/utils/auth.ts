@@ -2,19 +2,16 @@ import { redirect } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import axios from 'redaxios'
 import { useAppSession } from './session'
+import { authMiddleware } from '~/middleware/authMiddleware'
 
 /**
  * Fetches the current user from the session.
  * Returns the user object or null if not authenticated.
  */
 export const fetchUser = createServerFn({ method: 'GET' })
-	// .middleware([authMiddleware])
+	.middleware([authMiddleware])
 	.handler(async ({ context }) => {
-		const session = await useAppSession()
-		if (!session.data.token) {
-			return null
-		}
-		console.log('fetchUser', session)
+		console.log('fetchUser ', context)
 		try {
 			const response = await Promise.resolve({
 				data: {

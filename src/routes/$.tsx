@@ -1,5 +1,6 @@
 // routes/cms/[...path].tsx
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
+import { createFileRoute, useParams, useRouter } from '@tanstack/react-router'
 import { pageQueryOptions } from '~/utils/queries'
 
 export const Route = createFileRoute('/$')({
@@ -18,12 +19,15 @@ export const Route = createFileRoute('/$')({
 })
 
 function CMSPage() {
+	const params = useParams({ from: "/$"})
+	const { data: page } = useQuery(pageQueryOptions(params._splat || ''));
+	console.log('page', page)
 	return (
 		<div className="flex flex-col items-center justify-center min-h-[60vh]">
 			<div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-				<h1 className="text-3xl font-bold mb-4 text-center text-blue-700">CMS Page</h1>
+				<h1 className="text-3xl font-bold mb-4 text-center text-blue-700">CMS Page {params._splat}</h1>
 				<p className="mb-6 text-gray-600 text-center">
-					Welcome to the CMS page. Here you can view dynamic content.
+					Welcome to the CMS page. Here you can view dynamic content. {params._splat}
 				</p>
 				<form action="/logout" method="post" className="flex justify-center">
 					<button

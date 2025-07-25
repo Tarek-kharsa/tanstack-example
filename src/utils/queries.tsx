@@ -3,7 +3,8 @@ import { fetchUser } from './auth'
 
 export const userQueryOptions = queryOptions({
 	queryKey: ['user'],
-	queryFn: () => fetchUser,
+	queryFn: fetchUser,
+	enabled: false,
 })
 
 export const pageQueryOptions = (path: string) => {
@@ -14,7 +15,7 @@ export const pageQueryOptions = (path: string) => {
 				title: 'Home Page' + path,
 				content: 'Welcome to the home page!' + path,
 			}),
-		staleTime: 1000 * 60 * 5, // 5 minutes
+		staleTime: 1000 * 60 * 5,
 	})
 }
 

@@ -13,7 +13,7 @@ import { userQueryOptions } from '~/utils/queries'
 import { LinkHeader } from '~/components/LinkHeader'
 
 export const Route = createRootRouteWithContext<{
-	queryClient: QueryClient
+	queryClient: QueryClient,
 }>()({
 	head: () => ({
 		meta: [
@@ -68,13 +68,11 @@ export const Route = createRootRouteWithContext<{
 		}
 	},
 	loader: async ({ context }) => {
-		console.log('root loader ', context)
-		const token = await getAuthToken()
-
-		if (token) {
+		if (context.token) {
 			console.log('run call user ')
 			const user = await context.queryClient.ensureQueryData(userQueryOptions)
 			console.log('user', user)
+			return {user}
 		}
 	},
 	component: RootComponent,
