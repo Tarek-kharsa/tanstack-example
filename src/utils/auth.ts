@@ -1,8 +1,8 @@
 import { redirect } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
-import axios from 'redaxios'
 import { useAppSession } from './session'
 import { authMiddleware } from '~/middleware/authMiddleware'
+import { useAuthStore } from '~/store/auth'
 
 /**
  * Fetches the current user from the session.
@@ -11,7 +11,6 @@ import { authMiddleware } from '~/middleware/authMiddleware'
 export const fetchUser = createServerFn({ method: 'GET' })
 	.middleware([authMiddleware])
 	.handler(async ({ context }) => {
-		console.log('fetchUser ', context)
 		try {
 			const response = await Promise.resolve({
 				data: {
@@ -46,6 +45,7 @@ export const login = createServerFn({ method: 'POST' })
 			const resData = response.data
 			if (resData.token) {
 				// Store user info in session (only allowed fields)
+				await useAuthStore.getState().setToken(resData.token)
 				await session.update({
 					token: resData.token,
 				})
@@ -68,3 +68,24 @@ export const getAuthToken = createServerFn({ method: 'GET' }).handler(async () =
 	}
 	return session.data.token
 })
+
+
+export const isAuthenticatedFn = createServerFn().handler(async () => {
+  const session = await useAppSession()
+  return !!session.data.token;
+});
+
+export const assertAuthenticatedFn = createServerFn().handler(async () => {
+	const session = await useAppSession()
+  if (!session.data.token) {
+    throw redirect({ to: "/member/login" });
+  }
+  return session.data.token;
+});
+export const unAuthenticatedFn = createServerFn().handler(async () => {
+	const session = await useAppSession()
+  if (session.data.token) {
+    throw redirect({ to: "/member/login" });
+  }
+  return null;
+});

@@ -1,11 +1,15 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { assertAuthenticatedFn, isAuthenticatedFn } from "~/utils/auth";
+import { AppCookie } from "~/utils/cookie";
+import { getToken, isAuthenticated } from "~/utils/utils";
 
 export const Route = createFileRoute("/member/dashboard")({
   component: RouteComponent,
   beforeLoad: async ({ context }) => {
-    if (!context.token) {
-      throw redirect({ to: "/member/login" });
-    }
+    const token = getToken()
+		if (!token) {
+			throw redirect({ to: '/member/login' })
+		}
   },
 });
 

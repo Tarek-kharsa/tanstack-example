@@ -11,9 +11,11 @@ import { seo } from '~/utils/seo'
 import { getAuthToken } from '~/utils/auth'
 import { userQueryOptions } from '~/utils/queries'
 import { LinkHeader } from '~/components/LinkHeader'
+import { getToken, isAuthenticated, setToken } from '~/utils/utils'
+import { useAuthStore } from '~/store/auth'
 
 export const Route = createRootRouteWithContext<{
-	queryClient: QueryClient,
+	queryClient: QueryClient
 }>()({
 	head: () => ({
 		meta: [
@@ -60,11 +62,17 @@ export const Route = createRootRouteWithContext<{
 		)
 	},
 	notFoundComponent: () => <NotFound />,
-	beforeLoad: async ({ context }) => {
-		const token = await getAuthToken()
-		console.log('beforeLoad root context', context)
+	beforeLoad: async () => {
+		// 1. Await the initializer from your store.
+		// The `isHydrated` flag inside `initAuth` ensures it only fetches the token once.
+		await useAuthStore.getState().initAuth()
+
+		// 2. Get the token from the now-hydrated store state.
+		const token = getToken()
+
+		// 3. Pass the token to the loader and child routes via context.
 		return {
-			token
+			token,
 		}
 	},
 	loader: async ({ context }) => {
@@ -72,7 +80,7 @@ export const Route = createRootRouteWithContext<{
 			console.log('run call user ')
 			const user = await context.queryClient.ensureQueryData(userQueryOptions)
 			console.log('user', user)
-			return {user}
+			return { user }
 		}
 	},
 	component: RootComponent,
@@ -81,7 +89,7 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
 	return (
 		<RootDocument>
-      <LinkHeader/>
+			<LinkHeader />
 			<Outlet />
 		</RootDocument>
 	)

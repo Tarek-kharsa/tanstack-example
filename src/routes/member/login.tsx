@@ -1,12 +1,15 @@
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { login } from '~/utils/auth'
+import { assertAuthenticatedFn, login, unAuthenticatedFn } from '~/utils/auth'
 import { userQueryOptions } from '~/utils/queries'
+import { getToken, isAuthenticated } from '~/utils/utils'
+import { AppCookie } from '~/utils/cookie'
 
 export const Route = createFileRoute('/member/login')({
 	beforeLoad: async ({ context }) => {
-		if (context.token) {
+		const token = getToken()
+		if (token) {
 			throw redirect({ to: '/member/dashboard' })
 		}
 	},
