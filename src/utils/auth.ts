@@ -1,8 +1,7 @@
 import { redirect } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
-import { useAppSession } from './session'
 import { authMiddleware } from '~/middleware/authMiddleware'
-import { useAuthStore } from '~/store/auth'
+import { useAppSession } from './session'
 
 /**
  * Fetches the current user from the session.
@@ -12,12 +11,13 @@ export const fetchUser = createServerFn({ method: 'GET' })
 	.middleware([authMiddleware])
 	.handler(async ({ context }) => {
 		try {
-			const response = await Promise.resolve({
+			await new Promise(resolve => setTimeout(resolve, 3000))
+			const response = {
 				data: {
 					id: 1,
 					name: 'John Doe',
 				},
-			})
+			}
 			return response.data as any
 		} catch (error) {
 			return null
@@ -44,12 +44,10 @@ export const login = createServerFn({ method: 'POST' })
 			})
 			const resData = response.data
 			if (resData.token) {
-				// Store user info in session (only allowed fields)
-				await useAuthStore.getState().setToken(resData.token)
 				await session.update({
 					token: resData.token,
 				})
-				return { token: resData.token }
+				return { success: true }
 			}
 		} catch (error: any) {}
 	})
@@ -61,31 +59,11 @@ export const logout = createServerFn({ method: 'POST' }).handler(async () => {
 	throw redirect({ to: '/member/login' })
 })
 
-export const getAuthToken = createServerFn({ method: 'GET' }).handler(async () => {
+export const getIsAuth = createServerFn({ method: 'GET' }).handler(async () => {
 	const session = await useAppSession()
+	console.log('session.data.token', session.data.token)
 	if (!session.data.token) {
-		return null
+		return false
 	}
-	return session.data.token
+	return true
 })
-
-
-export const isAuthenticatedFn = createServerFn().handler(async () => {
-  const session = await useAppSession()
-  return !!session.data.token;
-});
-
-export const assertAuthenticatedFn = createServerFn().handler(async () => {
-	const session = await useAppSession()
-  if (!session.data.token) {
-    throw redirect({ to: "/member/login" });
-  }
-  return session.data.token;
-});
-export const unAuthenticatedFn = createServerFn().handler(async () => {
-	const session = await useAppSession()
-  if (session.data.token) {
-    throw redirect({ to: "/member/login" });
-  }
-  return null;
-});

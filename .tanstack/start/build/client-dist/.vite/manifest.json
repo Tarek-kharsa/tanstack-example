@@ -1,0 +1,67 @@
+{
+  "../../../../../~start/default-client-entry.tsx": {
+    "file": "assets/main-Cw-OT1At.js",
+    "name": "main",
+    "src": "../../../../../~start/default-client-entry.tsx",
+    "isEntry": true,
+    "dynamicImports": [
+      "src/routes/member/login.tsx?tsr-split=component",
+      "src/routes/member/forgot_password.tsx?tsr-split=component",
+      "src/routes/member/dashboard.tsx?tsr-split=component",
+      "src/routes/member/create_account.tsx?tsr-split=component",
+      "src/routes/member/activate_account.tsx?tsr-split=component"
+    ],
+    "assets": [
+      "assets/app-xWNm4oJ7.css"
+    ]
+  },
+  "/Users/tarek.k/Documents/GitHub/tanstack-example/src/styles/app.css": {
+    "file": "assets/app-xWNm4oJ7.css",
+    "src": "/Users/tarek.k/Documents/GitHub/tanstack-example/src/styles/app.css"
+  },
+  "src/routes/member/activate_account.tsx?tsr-split=component": {
+    "file": "assets/activate_account-svz4-ENi.js",
+    "name": "activate_account",
+    "src": "src/routes/member/activate_account.tsx?tsr-split=component",
+    "isDynamicEntry": true,
+    "imports": [
+      "../../../../../~start/default-client-entry.tsx"
+    ]
+  },
+  "src/routes/member/create_account.tsx?tsr-split=component": {
+    "file": "assets/create_account-D9uOZ2M7.js",
+    "name": "create_account",
+    "src": "src/routes/member/create_account.tsx?tsr-split=component",
+    "isDynamicEntry": true,
+    "imports": [
+      "../../../../../~start/default-client-entry.tsx"
+    ]
+  },
+  "src/routes/member/dashboard.tsx?tsr-split=component": {
+    "file": "assets/dashboard-DRjCTJwt.js",
+    "name": "dashboard",
+    "src": "src/routes/member/dashboard.tsx?tsr-split=component",
+    "isDynamicEntry": true,
+    "imports": [
+      "../../../../../~start/default-client-entry.tsx"
+    ]
+  },
+  "src/routes/member/forgot_password.tsx?tsr-split=component": {
+    "file": "assets/forgot_password-FWkRT9Rf.js",
+    "name": "forgot_password",
+    "src": "src/routes/member/forgot_password.tsx?tsr-split=component",
+    "isDynamicEntry": true,
+    "imports": [
+      "../../../../../~start/default-client-entry.tsx"
+    ]
+  },
+  "src/routes/member/login.tsx?tsr-split=component": {
+    "file": "assets/login-BY_jTYwh.js",
+    "name": "login",
+    "src": "src/routes/member/login.tsx?tsr-split=component",
+    "isDynamicEntry": true,
+    "imports": [
+      "../../../../../~start/default-client-entry.tsx"
+    ]
+  }
+}

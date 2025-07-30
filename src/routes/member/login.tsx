@@ -1,15 +1,13 @@
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
 
-import { useQueryClient } from '@tanstack/react-query'
-import { assertAuthenticatedFn, login, unAuthenticatedFn } from '~/utils/auth'
-import { userQueryOptions } from '~/utils/queries'
-import { getToken, isAuthenticated } from '~/utils/utils'
-import { AppCookie } from '~/utils/cookie'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { getIsAuth, login } from '~/utils/auth'
+import { authTokenQueryOptions, userQueryOptions } from '~/utils/queries'
+import { useServerFn } from '@tanstack/react-start'
 
 export const Route = createFileRoute('/member/login')({
 	beforeLoad: async ({ context }) => {
-		const token = getToken()
-		if (token) {
+		if (context.isLoggedIn) {
 			throw redirect({ to: '/member/dashboard' })
 		}
 	},
@@ -28,8 +26,13 @@ function MemberLoginPage() {
 				console.error('Login failed:', response.error)
 				return
 			}
-
-			await queryClient.ensureQueryData(userQueryOptions)
+			// getAuth().then((isAuth) => {
+			// 	console.log('isAuth', isAuth)
+			// })
+			// refetch()
+			const token = await queryClient.invalidateQueries({ queryKey: ['authToken'] })
+			console.log('token', token)
+			queryClient.ensureQueryData(userQueryOptions)
 			router.navigate({ to: '/member/dashboard' })
 		} catch (error) {
 			console.error('Unexpected login error:', error)

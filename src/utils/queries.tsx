@@ -1,10 +1,15 @@
 import { queryOptions, useQuery } from '@tanstack/react-query'
-import { fetchUser } from './auth'
+import { fetchUser, getIsAuth } from './auth'
 
 export const userQueryOptions = queryOptions({
 	queryKey: ['user'],
 	queryFn: fetchUser,
 	enabled: false,
+})
+
+export const authTokenQueryOptions = queryOptions({
+	queryKey: ['authToken'],
+	queryFn: getIsAuth,
 })
 
 export const pageQueryOptions = (path: string) => {

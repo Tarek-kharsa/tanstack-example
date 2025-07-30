@@ -1,7 +1,8 @@
 // LinkHeader.tsx
+import { useQuery } from '@tanstack/react-query'
 import { Link, useLoaderData, useRouteContext } from '@tanstack/react-router'
 import React from 'react'
-import { useUser } from '~/utils/queries'
+import { authTokenQueryOptions, useUser } from '~/utils/queries'
 export type LinkItem = {
 	_name?: string
 	_url?: string
@@ -19,12 +20,14 @@ export type HeaderItem = { name: string; links: LinkItem[] } | LinkItem
 
 export const LinkHeader = () => {
 	const { data: user } = useUser()
+	const { data: authToken } = useQuery(authTokenQueryOptions)
+	console.log('authToken', authToken)
 	// const loaderData = useLoaderData({ from: '__root__'})
 	// const user = loaderData?.user || null
 	return (
 		<nav className="flex items-center gap-10 text-lg px-6 py-3 bg-white shadow-sm rounded-lg">
 			{/* Auth Links */}
-			{!user ? (
+			{!user && !authToken && (
 				<div className="flex gap-2 items-center">
 					<Link
 						to="/member/login"
@@ -41,18 +44,26 @@ export const LinkHeader = () => {
 						Create Account
 					</Link>
 				</div>
-			) : (
-				<>
-					{user.name && <span className="text-blue-700 font-semibold">Welcome, {user.name}!</span>}
-					<Link
-						to="/member/dashboard"
-						activeProps={{ className: 'font-bold text-blue-700 underline underline-offset-4' }}
-						className="px-4 py-2 rounded-md hover:bg-blue-50 hover:text-blue-700 transition font-medium"
-					>
-						dashboard
-					</Link>
-				</>
 			)}
+			<>
+				{authToken && (
+					<div className="flex items-center gap-2">
+						<img
+							src="https://ui-avatars.com/api/?name=User&background=0D8ABC&color=fff"
+							alt="User Avatar"
+							className="w-8 h-8 rounded-full border border-blue-200"
+						/>
+						{user && <span className="text-blue-700 font-semibold">{user.name}</span>}
+					</div>
+				)}
+				<Link
+					to="/member/dashboard"
+					activeProps={{ className: 'font-bold text-blue-700 underline underline-offset-4' }}
+					className="px-4 py-2 rounded-md hover:bg-blue-50 hover:text-blue-700 transition font-medium"
+				>
+					dashboard
+				</Link>
+			</>
 
 			{/* Navigation Links */}
 			{data?.map((item, idx) => {

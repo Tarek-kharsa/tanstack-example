@@ -1,18 +1,15 @@
 /// <reference types="vite/client" />
-import { HeadContent, Link, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
+import type { QueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import * as React from 'react'
-import type { QueryClient } from '@tanstack/react-query'
 import { DefaultCatchBoundary } from '~/components/DefaultCatchBoundary'
+import { LinkHeader } from '~/components/LinkHeader'
 import { NotFound } from '~/components/NotFound'
 import appCss from '~/styles/app.css?url'
+import { authTokenQueryOptions, userQueryOptions } from '~/utils/queries'
 import { seo } from '~/utils/seo'
-import { getAuthToken } from '~/utils/auth'
-import { userQueryOptions } from '~/utils/queries'
-import { LinkHeader } from '~/components/LinkHeader'
-import { getToken, isAuthenticated, setToken } from '~/utils/utils'
-import { useAuthStore } from '~/store/auth'
 
 export const Route = createRootRouteWithContext<{
 	queryClient: QueryClient
@@ -27,7 +24,7 @@ export const Route = createRootRouteWithContext<{
 				content: 'width=device-width, initial-scale=1',
 			},
 			...seo({
-				title: 'TanStack Start | Type-Safe, Client-First, Full-Stack React Framework',
+				title: 'TanStack Start | Auth Example',
 				description: `TanStack Start is a type-safe, client-first, full-stack React framework. `,
 			}),
 		],
@@ -62,26 +59,17 @@ export const Route = createRootRouteWithContext<{
 		)
 	},
 	notFoundComponent: () => <NotFound />,
-	beforeLoad: async () => {
-		// 1. Await the initializer from your store.
-		// The `isHydrated` flag inside `initAuth` ensures it only fetches the token once.
-		await useAuthStore.getState().initAuth()
-
-		// 2. Get the token from the now-hydrated store state.
-		const token = getToken()
-
-		// 3. Pass the token to the loader and child routes via context.
+	beforeLoad: async ({ context }) => {
+		const checkSession = await context.queryClient.ensureQueryData(authTokenQueryOptions)
+		if (checkSession) {
+			context.queryClient.ensureQueryData(userQueryOptions)
+		}
 		return {
-			token,
+			isLoggedIn: checkSession,
 		}
 	},
 	loader: async ({ context }) => {
-		if (context.token) {
-			console.log('run call user ')
-			const user = await context.queryClient.ensureQueryData(userQueryOptions)
-			console.log('user', user)
-			return { user }
-		}
+		
 	},
 	component: RootComponent,
 })
